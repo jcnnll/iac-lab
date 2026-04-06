@@ -1,0 +1,63 @@
+---
+- name: Configure BIND9 DNS
+  hosts: dns_servers
+  become: true
+
+  tasks:
+    - name: Install BIND9
+      ansible.builtin.apt:
+        name:
+          - bind9
+          - bind9utils
+          - bind9-doc
+        state: present
+        update_cache: true
+
+    - name: Configure BIND9 Options
+      ansible.builtin.copy:
+        dest: /etc/bind/named.conf.options
+        content: |
+          options {
+              directory "/var/cache/bind";
+              recursion yes;
+              allow-query { any; };
+              forwarders {
+                  8.8.8.8;
+                  8.8.4.4;
+              };
+              dnssec-validation auto;
+              listen-on-v6 { any; };
+          };
+      notify: Restart BIND9
+
+    - name: Configure Local Zone Declaration
+      ansible.builtin.copy:
+        dest: /etc/bind/named.conf.local
+        content: |
+          zone "vlab" {
+              type master;
+              file "/etc/bind/db.vlab";
+          };
+      notify: Restart BIND9
+
+    - name: Create vlab Zone File
+      ansible.builtin.copy:
+        dest: /etc/bind/db.vlab
+        content: |
+          $TTL    604800
+          @       IN      SOA     dns.vlab. admin.vlab. (
+                                        3         ; Serial
+                                   604800         ; Refresh
+                                    86400         ; Retry
+                                  2419200         ; Expire
+                                   604800 )       ; Negative Cache TTL
+          ;
+          @       IN      NS      dns.vlab.
+          dns     IN      A       192.168.2.10
+      notify: Restart BIND9
+
+  handlers:
+    - name: Restart BIND9
+      ansible.builtin.service:
+        name: bind9
+        state: restarted

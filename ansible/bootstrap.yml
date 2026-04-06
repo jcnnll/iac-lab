@@ -1,0 +1,37 @@
+---
+- name: Bootstrap Environment and Identity
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Ensure Ansible collections are installed locally
+      # This runs on your Mac (the control node) before touching the VM
+      ansible.builtin.command:
+        cmd: "ansible-galaxy collection install -r {{ playbook_dir }}/requirements.yml --force"
+
+    - name: Configure local SSH aliases for vlab
+      ansible.builtin.blockinfile:
+        path: "~/.ssh/config"
+        create: true
+        mode: "0600"
+        marker: "# {mark} ANSIBLE MANAGED VLAB BLOCK"
+        block: |
+          Host *.vlab
+              User jay
+              IdentityFile ~/.ssh/id_vlab
+              IdentitiesOnly yes
+              StrictHostKeyChecking no
+              UserKnownHostsFile /dev/null
+
+- name: Bootstrap Persistent Lab Identity
+  hosts: dns_servers
+  gather_facts: false
+  vars:
+    ansible_ssh_private_key_file: "~/.lima/_config/user"
+
+  tasks:
+    - name: Install persistent public key from vault
+      ansible.posix.authorized_key:
+        user: jay
+        state: present
+        key: "{{ vault_ssh_public_key }}"
