@@ -19,12 +19,26 @@
         mode: "0600"
         marker: "# {mark} ANSIBLE MANAGED VLAB BLOCK"
         block: |
-          Host *.vlab
+          Host *.lab
               User jay
               IdentityFile ~/.ssh/id_vlab
               IdentitiesOnly yes
               StrictHostKeyChecking no
               UserKnownHostsFile /dev/null
+
+    - name: Ensure macOS resolver directory exists
+      ansible.builtin.file:
+        path: /etc/resolver
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Route .lab queries to the DNS VM
+      ansible.builtin.copy:
+        dest: /etc/resolver/lab
+        content: "nameserver 192.168.2.10"
+        mode: "0644"
+      become: true
 
 - name: Bootstrap Persistent Lab Identity
   hosts: dns_servers

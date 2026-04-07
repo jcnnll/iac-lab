@@ -11,7 +11,7 @@ Hardware: macOS (ARM64) | Driver: Lima VZ | Network: socket_vmnet
 
 ## Purpose:
 
-This is a pattern of implementation for a virtual lab that uses realistic network configuration in place of port forwarding to simulate production-like infrastructure on a domain (.vlab)
+This is a pattern of implementation for a virtual lab that uses realistic network configuration in place of port forwarding to simulate production-like infrastructure on a domain (.lab)
 
 Infrastructure is provisioned and destroyed using Terraform whereas infrastructure state is managed by Ansible.
 

@@ -37,28 +37,28 @@
       ansible.builtin.copy:
         dest: /etc/bind/named.conf.local
         content: |
-          zone "vlab" {
+          zone "lab" {
               type master;
-              file "/etc/bind/db.vlab";
+              file "/etc/bind/db.lab";
           };
         owner: root
         group: bind
         mode: "0644"
       notify: Restart BIND9
 
-    - name: Create vlab Zone File
+    - name: Create lab Zone File
       ansible.builtin.copy:
-        dest: /etc/bind/db.vlab
+        dest: /etc/bind/db.lab
         content: |
           $TTL    604800
-          @       IN      SOA     dns.vlab. admin.vlab. (
+          @       IN      SOA     dns.lab. admin.lab. (
                                         3         ; Serial
                                    604800         ; Refresh
                                     86400         ; Retry
                                   2419200         ; Expire
                                    604800 )       ; Negative Cache TTL
           ;
-          @       IN      NS      dns.vlab.
+          @       IN      NS      dns.lab.
           dns     IN      A       192.168.2.10
         owner: root
         group: bind
