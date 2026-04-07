@@ -16,11 +16,9 @@ jobs:
 
       - name: Install Security Tools
         run: |
-          set +u
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install.sh | bash
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash -c "set +u; bash"
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install.sh | bash -c "set +u; bash"
           pip install checkov
-          set -u
 
       - name: Run tflint
         run: |
