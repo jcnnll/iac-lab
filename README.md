@@ -15,3 +15,8 @@ This is a pattern of implementation for a virtual lab that uses realistic networ
 
 Infrastructure is provisioned and destroyed using Terraform whereas infrastructure state is managed by Ansible.
 
+## CI Process
+
+For local linting and static code analysis the `scripts/pre-commit.sh` can be run to lint, validate an run security scans on the Terraform codebase and Ansible-Lint on the Ansible codebase.
+
+The GitHub Actions pipeline defined for the project will run all the static code analysis and security scans when changes are committed to the repository.
